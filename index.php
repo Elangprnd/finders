@@ -19,32 +19,25 @@ include 'config/db_connect.php';
     <?php include 'includes/sidebar.php'; ?>
 
 
-    <!-- Main Content -->
     <main class="flex-1 h-full overflow-y-auto relative scroll-smooth bg-gray-50">
         
-        <!-- Hero Section -->
-        <div class="relative w-full min-h-[850px] pb-20">
-            <!-- Background Image -->
+        <div class="relative w-full">
             <div class="absolute inset-0 w-full h-full">
                 <img src="assets/img/home_background.jpg" alt="Hospital Background" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-blue-950/60 mix-blend-multiply"></div>
-                <!-- Gradient Overlay for Text Visibility -->
                 <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
-                <!-- Gradient Overlay for Transition -->
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-gray-50/20 to-transparent"></div>
             </div>
             
-            <!-- Hero Content -->
-            <div class="relative z-10 container mx-auto px-6 lg:px-12 pt-32 pb-10 flex flex-col justify-center">
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 pt-28 pb-24 xl:pb-12 flex flex-col justify-center">
                 <div class="w-full lg:w-2/3 animate-fade-in-down">
                     <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
                         Finde<span class="text-finders-green">RS</span>
                     </h1>
-                    <p class="text-blue-100 text-lg lg:text-xl mb-8 max-w-xl leading-relaxed drop-shadow-md">
+                    <p class="text-white text-lg lg:text-xl mb-8 max-w-xl leading-relaxed drop-shadow-md font-medium">
                         Temukan rumah sakit dan layanan medis terbaik yang Anda butuhkan dengan cepat, tepat, dan mudah.
                     </p>
 
-                    <!-- Search Box -->
                     <div class="glass-card p-2 rounded-2xl flex items-center shadow-2xl max-w-2xl transform hover:scale-[1.01] transition-transform duration-300">
                         <div class="pl-4 text-gray-400">
                             <i class="fa-solid fa-magnifying-glass text-xl"></i>
@@ -57,9 +50,8 @@ include 'config/db_connect.php';
                         </button>
                     </div>
 
-                    <!-- Quick Stats -->
                     <div class="flex flex-wrap gap-6 mt-8 mb-6">
-                        <div class="flex items-center gap-2 text-white/80">
+                        <div class="flex items-center gap-2 text-white">
                             <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
                                 <i class="fa-solid fa-hospital text-finders-green"></i>
                             </div>
@@ -68,7 +60,7 @@ include 'config/db_connect.php';
                                 <p class="text-xs text-white font-medium drop-shadow-md">Rumah Sakit</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 text-white/80">
+                        <div class="flex items-center gap-2 text-white">
                             <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm shadow-lg">
                                 <i class="fa-solid fa-user-doctor text-finders-green"></i>
                             </div>
@@ -77,7 +69,7 @@ include 'config/db_connect.php';
                                 <p class="text-xs text-white font-medium drop-shadow-md">Dokter</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 text-white/80">
+                        <div class="flex items-center gap-2 text-white">
                             <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm shadow-lg">
                                 <i class="fa-solid fa-users text-finders-green"></i>
                             </div>
@@ -89,59 +81,88 @@ include 'config/db_connect.php';
                     </div>
                 </div>
 
-                <!-- Health Services Section -->
-                <div class="w-full mt-12 animate-fade-in-up" style="animation-delay: 0.3s;">
+                <div class="w-full mt-8 animate-fade-in-up" style="animation-delay: 0.3s;">
                     <h2 class="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
                         Cari Layanan Kesehatan
                     </h2>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <!-- Service Card 1 - Onkologi -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-pink-100 to-pink-200">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                    Onkologi
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Service Card 2 - Poli Gigi -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-cyan-100 to-cyan-200">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                    Poli Gigi
-                                </span>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                        <!-- Service Card 3 - Bedah Umum -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-green-100 to-green-200">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                    Bedah Umum
-                                </span>
-                            </div>
-                        </div>
+                        <?php 
+                        // 1. QUERY KATEGORI
+                        $query_kat = mysqli_query($conn, "SELECT kategori, COUNT(*) as total FROM data_layanan_rs GROUP BY kategori ORDER BY total DESC LIMIT 4");
 
-                        <!-- Service Card 4 - Kardiologi -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-red-100 to-red-200">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                    Kardiologi
+                        // 2. FUNGSI MAPPING STYLE
+                        function getServiceStyle($kategori) {
+                            $kategori = strtolower($kategori);
+                            
+                            // Default Style (Abu-abu)
+                            $style = [
+                                'image' => 'default_service.jpg',
+                                'gradient' => 'from-gray-500/90 via-gray-600/90 to-gray-800/90', 
+                                'border' => 'border-gray-400/50'
+                            ];
+
+                            if (strpos($kategori, 'bedah') !== false) {
+                                $style = [
+                                    'image' => 'layanan_bedah.jpg',
+                                    'gradient' => 'from-green-500/90 via-green-600/80 to-green-900/90',
+                                    'border' => 'border-green-400/50'
+                                ];
+                            }
+                            elseif (strpos($kategori, 'darurat') !== false || strpos($kategori, 'ugd') !== false) {
+                                $style['image'] = 'layanan_igd.jpg';
+                            }
+                            elseif (strpos($kategori, 'penunjang') !== false || strpos($kategori, 'radiologi') !== false) {
+                                $style['image'] = 'layanan_penunjang.png';
+                            }
+                            elseif (strpos($kategori, 'spesialis') !== false) {
+                                $style['image'] = 'layanan_spesialis.jpg';
+                            }
+
+                            return $style;
+                        }
+
+                        // 3. LOOPING KARTU LAYANAN
+                        if(mysqli_num_rows($query_kat) > 0) {
+                            while($kat = mysqli_fetch_array($query_kat)) {
+                                $style = getServiceStyle($kat['kategori']);
+                                $nama_kategori = htmlspecialchars($kat['kategori']);
+                        ?>
+
+                        <a href="layanan.php?kategori=<?= urlencode($kat['kategori']) ?>" class="block h-full">
+                            <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden transition-transform hover:scale-[1.02] cursor-pointer group">
+                                <img src="assets/img/<?= $style['image'] ?>" 
+                                    alt="<?= $nama_kategori ?>" 
+                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10 tracking-wide">
+                                    <?= $nama_kategori ?>
                                 </span>
                             </div>
-                        </div>
+                        </a>
+
+                        <?php 
+                            } 
+                        } else {
+                            // Dummy Data
+                            $dummies = ['Penunjang', 'Gawat Darurat', 'Bedah', 'Spesialis'];
+                            foreach($dummies as $d) {
+                                $style = getServiceStyle($d);
+                                echo '
+                                <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden group">
+                                    <img src="assets/img/'.$style['image'].'" class="absolute inset-0 w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
+                                    <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10">'.$d.'</span>
+                                </div>';
+                            }
+                        }
+                        ?>
+
                     </div>
-                </div>
             </div>
 
-            <!-- Right Floating Section -->
             <div class="absolute z-20 flex flex-col gap-4 items-end bottom-8 right-6 lg:bottom-10 lg:right-10 xl:top-20 xl:right-10 xl:bottom-auto">
-                <!-- Quick Feature Card -->
                 <div class="hidden xl:block w-80 animate-fade-in-down" style="animation-delay: 0.2s;">
                     <div class="glass-card rounded-2xl p-5 shadow-2xl border-t-4 border-t-finders-green transition hover:-translate-y-1">
                         <div class="flex items-center gap-3 mb-3">
@@ -150,7 +171,6 @@ include 'config/db_connect.php';
                             </div>
                             <h3 class="font-bold text-gray-800 text-lg">Fitur Cepat</h3>
                         </div>
-                        <!-- Placeholder Image -->
                         <div class="w-full h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-xl mb-3 flex items-center justify-center">
                             <div class="text-center">
                                 <i class="fa-solid fa-stethoscope text-4xl text-finders-blue/40 mb-2"></i>
@@ -165,7 +185,6 @@ include 'config/db_connect.php';
                     </div>
                 </div>
 
-                <!-- Emergency Contact -->
                 <div class="animate-bounce-slow">
                     <div class="bg-red-600 text-white rounded-2xl p-4 shadow-red-500/50 shadow-xl flex items-center gap-4 hover:bg-red-700 transition cursor-pointer group transform hover:scale-105">
                         <div class="text-left">
@@ -180,17 +199,15 @@ include 'config/db_connect.php';
             </div>
         </div>
 
-        <!-- Main Content Area -->
         <div class="relative px-6 lg:px-12 mt-8 z-20 pb-0">
             
-            <!-- Nearby Hospitals Section -->
             <div class="animate-fade-in-up mt-8" style="animation-delay: 0.5s;">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1">
+                        <h2 class="text-2xl font-bold text-white mb-1">
                             Rumah Sakit Terdekat
                         </h2>
-                        <p class="text-gray-500 text-sm">Rekomendasi rumah sakit terbaik di sekitar Anda berdasarkan rating.</p>
+                        <p class="text-blue-100 text-sm">Rekomendasi rumah sakit terbaik di sekitar Anda berdasarkan rating.</p>
                     </div>
                     <a href="rs_daftar.php" class="text-finders-blue font-semibold text-sm hover:text-green-600 transition flex items-center gap-1 group">
                         Lihat Semua <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
@@ -206,21 +223,26 @@ include 'config/db_connect.php';
                     
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
                         
-                        <div class="h-48 overflow-hidden rounded-t-2xl relative bg-gray-100">
+                        <div class="h-48 w-full overflow-hidden rounded-t-2xl relative bg-gray-100 isolate">
+                            
                             <img src="assets/img/<?= $d['foto'] ?>" 
                                 alt="<?= $d['nama_rs'] ?>" 
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                style="transform: translateZ(0);">
                         </div>
                         
-                        <div class="p-5 flex flex-col flex-1">
+                        <div class="p-5 flex flex-col flex-1 bg-white rounded-b-2xl">
                             <div class="text-xs font-bold text-finders-green mb-1 uppercase tracking-wide">
-                                <?= htmlspecialchars($d['wilayah']) ?>  </div>
+                                <?= htmlspecialchars($d['wilayah']) ?>
+                            </div>
                             
                             <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-finders-blue transition line-clamp-1">
-                                <?= htmlspecialchars($d['nama_rs']) ?>  </h3>
+                                <?= htmlspecialchars($d['nama_rs']) ?>
+                            </h3>
                             
                             <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">
-                                <?= htmlspecialchars($d['deskripsi']) ?> </p>
+                                <?= htmlspecialchars($d['deskripsi']) ?>
+                            </p>
                             
                             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                                 <div class="flex items-center gap-1 text-yellow-500 text-sm">
@@ -238,16 +260,15 @@ include 'config/db_connect.php';
                 </div>
             </div>
 
-            <!-- Why Choose Us Section -->
             <div class="mt-20 animate-fade-in-up" style="animation-delay: 0.7s;">
                 <div class="text-center mb-12">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Mengapa Memilih FindeRS?</h2>
-                    <p class="text-gray-500 text-sm">Platform terpercaya untuk kebutuhan kesehatan Anda</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Mengapa Memilih FindeRS?</h2>
+                    <p class="text-blue-100 text-sm">Platform terpercaya untuk kebutuhan kesehatan Anda</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 hover:shadow-lg transition group">
-                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-finders-blue transition">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#1e3a8a] transition">
                             <i class="fa-solid fa-magnifying-glass-location text-2xl text-finders-blue group-hover:text-white transition"></i>
                         </div>
                         <h3 class="font-bold text-gray-800 mb-2">Pencarian Mudah</h3>
@@ -255,7 +276,7 @@ include 'config/db_connect.php';
                     </div>
 
                     <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 hover:shadow-lg transition group">
-                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-finders-green transition">
+                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#00D348] transition">
                             <i class="fa-solid fa-calendar-check text-2xl text-finders-green group-hover:text-white transition"></i>
                         </div>
                         <h3 class="font-bold text-gray-800 mb-2">Booking Online</h3>
