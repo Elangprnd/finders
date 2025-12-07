@@ -13,10 +13,27 @@ if(!$id_rs) {
     exit;
 }
 
+// Query rumah sakit
 $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit WHERE id_rs = '$id_rs'");
+
+if(!$query_rs || mysqli_num_rows($query_rs) == 0) {
+    echo '<div class="p-4 text-red-500 bg-white rounded-xl">Data Rumah Sakit tidak ditemukan.</div>';
+    exit;
+}
+
 $rs = mysqli_fetch_array($query_rs);
 
+// Query layanan - pastikan menggunakan id_rs yang sama
 $query_layanan = mysqli_query($conn, "SELECT * FROM data_layanan_rs WHERE id_rs = '$id_rs'");
+
+// Debug: Cek apakah query layanan berhasil
+if(!$query_layanan) {
+    error_log("Error query layanan: " . mysqli_error($conn));
+    echo "<!-- DEBUG: Query layanan error: " . mysqli_error($conn) . " -->";
+} else {
+    $jumlah_layanan = mysqli_num_rows($query_layanan);
+    echo "<!-- DEBUG: Query layanan sukses. Jumlah layanan ditemukan: $jumlah_layanan untuk RS ID: $id_rs -->";
+}
 ?>
 
 <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden relative animate-fade-in-up mx-4 flex flex-col max-h-[90vh]">
@@ -80,26 +97,48 @@ $query_layanan = mysqli_query($conn, "SELECT * FROM data_layanan_rs WHERE id_rs 
 
             <!-- Services -->
             <div class="mb-4">
-                <h3 class="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">Layanan Unggulan</h3>
-                <?php if(mysqli_num_rows($query_layanan) > 0): ?>
+                <h3 class="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-hospital-user text-finders-blue"></i>
+                    Layanan Unggulan
+                </h3>
+                
+                <?php 
+                // Debug info
+                $debug_jumlah = $query_layanan ? mysqli_num_rows($query_layanan) : 0;
+                echo "<!-- DEBUG LAYANAN: id_rs=$id_rs, jumlah_row=$debug_jumlah -->";
+                
+                if($query_layanan && mysqli_num_rows($query_layanan) > 0): 
+                    $layanan_count = 0;
+                ?>
                     <div class="flex flex-wrap gap-2">
-                        <?php while($lay = mysqli_fetch_array($query_layanan)): ?>
-                            <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium border border-gray-200">
+                        <?php while($lay = mysqli_fetch_array($query_layanan)): 
+                            $layanan_count++;
+                            echo "<!-- LAYANAN #$layanan_count: {$lay['nama_layanan']} -->";
+                        ?>
+                            <span class="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-green-50 text-gray-700 rounded-full text-xs font-medium border border-blue-200 hover:border-finders-blue transition">
+                                <i class="fa-solid fa-check-circle text-green-500 mr-1"></i>
                                 <?= htmlspecialchars($lay['nama_layanan']) ?>
                             </span>
                         <?php endwhile; ?>
                     </div>
+                    <p class="text-gray-400 text-xs mt-2">
+                        <i class="fa-solid fa-info-circle"></i> Total <?= $layanan_count ?> layanan tersedia
+                    </p>
                 <?php else: ?>
-                    <p class="text-gray-400 italic text-sm">Belum ada data layanan.</p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                        <i class="fa-solid fa-circle-info text-gray-300 text-3xl mb-2"></i>
+                        <p class="text-gray-400 italic text-sm">Data layanan belum tersedia untuk rumah sakit ini.</p>
+                        <p class="text-gray-400 text-xs mt-1">Silakan hubungi rumah sakit untuk informasi lebih lanjut.</p>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- Footer Actions -->
         <div class="p-6 border-t border-gray-100 bg-gray-50 flex gap-3 shrink-0">
-            <a href="#" class="flex-1 bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl text-center transition hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center gap-2 text-sm">
+            <button onclick="alert('Fitur jadwal akan segera hadir!')" class="flex-1 bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl text-center transition hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center gap-2 text-sm cursor-pointer">
                 <i class="fa-regular fa-calendar-days"></i> Lihat Jadwal
-            </a>
+            </button>
             <a href="booking.php?rs_id=<?= $rs['id_rs'] ?>" class="flex-1 bg-finders-green hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-xl text-center transition shadow-lg shadow-green-200 flex items-center justify-center gap-2 text-sm">
                 <i class="fa-solid fa-stethoscope"></i> Buat Janji
             </a>

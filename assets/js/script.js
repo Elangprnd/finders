@@ -184,6 +184,8 @@ function openDetail(id) {
     const overlay = document.getElementById('modalOverlay');
     const content = document.getElementById('modalContent');
     
+    console.log('Opening detail for RS ID:', id); // Debug
+    
     // 2. Tampilkan Overlay (Hapus class 'hidden' bawaan Tailwind)
     if (overlay) {
         overlay.classList.remove('hidden');
@@ -201,8 +203,12 @@ function openDetail(id) {
 
         // 4. Request Data ke Server (AJAX Fetch)
         // Memanggil file rs_detail.php tanpa me-reload halaman
-        fetch('rs_detail.php?id=' + id)
+        const url = 'rs_detail.php?id=' + id;
+        console.log('Fetching URL:', url); // Debug
+        
+        fetch(url)
             .then(response => {
+                console.log('Response status:', response.status); // Debug
                 // Cek apakah koneksi sukses
                 if (!response.ok) {
                     throw new Error('Gagal mengambil data');
@@ -210,6 +216,7 @@ function openDetail(id) {
                 return response.text(); // Ubah respon menjadi teks HTML
             })
             .then(html => {
+                console.log('HTML received, length:', html.length); // Debug
                 // 5. Masukkan HTML yang diterima ke dalam Modal Content
                 content.innerHTML = html;
             })
@@ -248,4 +255,88 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+});
+
+
+// ... (Kode modal detail RS sebelumnya biarkan di atas) ...
+
+// =================================================================
+// LOGIKA HALAMAN BOOKING (booking.php)
+// =================================================================
+
+/**
+ * Fungsi untuk mengambil data layanan via AJAX
+ * Dipanggil saat dropdown RS berubah atau saat halaman dimuat
+ */
+function loadLayanan(rsId) {
+    const layananSelect = document.getElementById('id_layanan');
+    
+    // Pastikan elemen ada (Mencegah error jika script dipanggil di halaman lain)
+    if (!layananSelect) return;
+
+    console.log('Loading layanan for RS ID:', rsId); // Debug
+
+    // Reset Dropdown & Tampilkan Loading
+    layananSelect.innerHTML = '<option>Memuat layanan...</option>';
+    layananSelect.disabled = true;
+
+    // Fetch Data ke API PHP
+    fetch(`api/booking/get_layanan.php?id_rs=${rsId}`)
+        .then(response => {
+            console.log('Response status:', response.status); // Debug
+            if (!response.ok) {
+                throw new Error('HTTP error ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Layanan data received:', data); // Debug
+            
+            // Reset Opsi
+            layananSelect.innerHTML = '<option value="">Pilih Layanan</option>';
+            
+            if(data && data.length > 0) {
+                // Loop data layanan dan masukkan ke dropdown
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id_layanan;
+                    option.textContent = item.nama_layanan + ' (' + item.kategori + ')';
+                    layananSelect.appendChild(option);
+                });
+                layananSelect.disabled = false;
+                console.log('✅ Loaded', data.length, 'layanan'); // Debug
+            } else {
+                layananSelect.innerHTML = '<option value="">Tidak ada layanan tersedia</option>';
+                console.warn('⚠️ No layanan found for RS ID:', rsId); // Debug
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error loading layanan:', error);
+            layananSelect.innerHTML = '<option value="">Gagal memuat data</option>';
+            layananSelect.disabled = false; // Biarkan user bisa retry dengan ganti RS
+        });
+}
+
+// Event Listener Otomatis saat Halaman Booking Dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Cari elemen dropdown RS
+    const rsSelect = document.getElementById('id_rs');
+
+    // Cek apakah kita sedang berada di halaman booking
+    if (rsSelect) {
+        
+        // 1. Cek Nilai Awal (Auto-load)
+        // Jika user datang dari tombol "Buat Janji" di detail RS, 
+        // dropdown RS sudah terpilih otomatis lewat PHP. Kita perlu load layanannya.
+        if (rsSelect.value) {
+            loadLayanan(rsSelect.value);
+        }
+
+        // 2. Event Listener Perubahan (Change)
+        // Saat user mengganti pilihan RS secara manual
+        rsSelect.addEventListener('change', function() {
+            loadLayanan(this.value);
+        });
+    }
 });

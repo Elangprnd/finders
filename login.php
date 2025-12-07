@@ -1,3 +1,11 @@
+<?php
+session_start();
+// Cek apakah sudah ada redirect URL yang tersimpan dari booking.php
+// Jika belum dan ada parameter 'redirect', simpan ke session
+if(!isset($_SESSION['redirect_after_login']) && isset($_GET['redirect'])) {
+    $_SESSION['redirect_after_login'] = $_GET['redirect'];
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>

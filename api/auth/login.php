@@ -22,8 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_name'] = $data['nama'];
         $_SESSION['role'] = 'pasien';
         
-        // Redirect ke Halaman Utama
-        header("Location: ../../index.php");
+        // Redirect ke halaman yang dituju sebelumnya (jika ada)
+        if(isset($_SESSION['redirect_after_login'])) {
+            $redirect_url = $_SESSION['redirect_after_login'];
+            unset($_SESSION['redirect_after_login']); // Hapus session redirect
+            
+            // Pastikan URL dimulai dengan / untuk path relatif dari root
+            if(strpos($redirect_url, '/') !== 0) {
+                $redirect_url = '/' . $redirect_url;
+            }
+            
+            header("Location: ../..$redirect_url");
+        } else {
+            header("Location: ../../index.php");
+        }
         exit;
     }
 
