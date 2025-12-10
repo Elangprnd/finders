@@ -124,7 +124,7 @@
                     </span>
                 </div>
 
-                <!-- QR Code Section (hanya tampil jika dikonfirmasi) -->
+                <!-- QR Code (hanya tampil jika dikonfirmasi) -->
                 <div id="modalQRSection" class="hidden">
                     <div class="bg-white p-6 rounded-xl border border-gray-200 text-center hover:border-blue-300 hover:shadow-md transition-all">
                         <div class="flex justify-center mb-4">

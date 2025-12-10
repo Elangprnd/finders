@@ -27,14 +27,16 @@ include 'config/db_connect.php';
                 <div class="absolute inset-0 bg-blue-950/60 mix-blend-multiply"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-gray-50/20 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-white via-transparent to-transparent"></div>
             </div>
             
             <div class="relative z-10 container mx-auto px-6 lg:px-12 pt-28 pb-24 xl:pb-12 flex flex-col justify-center">
                 <div class="w-full lg:w-2/3 animate-fade-in-down">
-                    <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
-                        Finde<span class="text-finders-green">RS</span>
+                    <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-4 drop-shadow-lg flex items-center gap-2">
+                        <img src="assets/img/FindeRS_Logo.png" alt="FindeRS Logo" class="h-14 lg:h-14 w-auto drop-shadow-xl" style="margin-top: 8px;">
+                        <span class="text-finders-blue">Finde<span class="text-finders-green">RS</span></span>
                     </h1>
-                    <p class="text-white text-lg lg:text-xl mb-8 max-w-xl leading-relaxed drop-shadow-md font-medium">
+                    <p class="text-white text-lg lg:text-xl mb-8 max-w-xl leading-relaxed font-medium" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">
                         Temukan rumah sakit dan layanan medis terbaik yang Anda butuhkan dengan cepat, tepat, dan mudah.
                     </p>
 
@@ -86,28 +88,6 @@ include 'config/db_connect.php';
             </div>
 
             <div class="absolute z-20 flex flex-col gap-4 items-end bottom-8 right-6 lg:bottom-10 lg:right-10 xl:top-20 xl:right-10 xl:bottom-auto">
-                <div class="hidden xl:block w-80 animate-fade-in-down" style="animation-delay: 0.2s;">
-                    <div class="glass-card rounded-2xl p-5 shadow-2xl border-t-4 border-t-finders-green transition hover:-translate-y-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="bg-blue-100 p-2 rounded-lg text-finders-blue">
-                                <i class="fa-solid fa-bolt text-xl"></i>
-                            </div>
-                            <h3 class="font-bold text-gray-800 text-lg">Fitur Cepat</h3>
-                        </div>
-                        <div class="w-full h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-xl mb-3 flex items-center justify-center">
-                            <div class="text-center">
-                                <i class="fa-solid fa-stethoscope text-4xl text-finders-blue/40 mb-2"></i>
-                                <p class="text-xs text-gray-400">Gambar Fitur</p>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-600 mb-4 leading-relaxed font-medium">Akses cepat ke penjadwalan, informasi layanan rumah sakit, dan dashboard admin.</p>
-                        <div class="flex gap-2">
-                            <button class="flex-1 bg-finders-green text-white py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-600 transition">Buka Dashboard</button>
-                            <button class="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-xs font-semibold hover:bg-gray-50 transition">Info Lanjut</button>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="animate-bounce-slow">
                     <div class="bg-red-600 text-white rounded-2xl p-4 shadow-red-500/50 shadow-xl flex items-center gap-4 hover:bg-red-700 transition cursor-pointer group transform hover:scale-105">
                         <div class="text-left">
