@@ -121,7 +121,7 @@ if(!$query_layanan) {
                             </span>
                         <?php endwhile; ?>
                     </div>
-                    <p class="text-gray-400 text-xs mt-2">
+                    <p class="text-gray-400 text-xs mt-4">
                         <i class="fa-solid fa-info-circle"></i> Total <?= $layanan_count ?> layanan tersedia
                     </p>
                 <?php else: ?>

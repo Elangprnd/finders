@@ -10,8 +10,14 @@ if(!isset($_SESSION['user_id'])) {
 
 $id_user = $_SESSION['user_id'];
 
+// QUERY KATEGORI LAYANAN YANG UNIK
+$query_kategori = mysqli_query($conn, "SELECT DISTINCT kategori 
+                                       FROM data_layanan_rs 
+                                       WHERE kategori IS NOT NULL 
+                                       ORDER BY kategori");
+
 // QUERY DATA RIWAYAT
-$query = mysqli_query($conn, "SELECT p.*, rs.nama_rs, rs.foto, l.nama_layanan 
+$query = mysqli_query($conn, "SELECT p.*, rs.nama_rs, rs.foto, l.nama_layanan, l.kategori 
                               FROM data_penjadwalan p
                               JOIN data_rumah_sakit rs ON p.id_rs = rs.id_rs
                               JOIN data_layanan_rs l ON p.id_layanan = l.id_layanan
@@ -34,6 +40,9 @@ if(!$query) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/style_user.css">
+    
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
 
@@ -49,12 +58,12 @@ if(!$query) {
             </div>
             
             <!-- Dark Overlay untuk Meningkatkan Kontras Teks -->
-            <div class="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/85 to-[#1e40af]/85"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/60 to-[#1e40af]/60"></div>
             
             <!-- Gradient Overlay untuk Transisi Smooth ke Body -->
             <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-gray-50"></div>
             
-            <div class="relative z-10 container mx-auto px-6 lg:px-12 py-12 pb-20">
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 py-16 pb-24">
                 <!-- Breadcrumb Navigation -->
                 <nav class="flex items-center gap-2 text-sm mb-8">
                     <a href="index.php" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
@@ -62,14 +71,14 @@ if(!$query) {
                         <span class="font-medium">Beranda</span>
                     </a>
                     <i class="fa-solid fa-chevron-right text-white/60 text-xs"></i>
-                    <span class="text-white font-semibold">Booking Kunjungan</span>
+                    <span class="text-white font-semibold">Riwayat Pengajuan</span>
                 </nav>
 
                 <!-- Header Content -->
                 <div>
-                    <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">Pengajuan Kunjungan</h1>
+                    <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">Riwayat Pengajuan</h1>
                     <p class="text-white/90 text-lg lg:text-xl max-w-3xl leading-relaxed">
-                        Jadwalkan kunjungan Anda dengan mudah. Lengkapi formulir di bawah untuk membuat janji temu dengan dokter spesialis di rumah sakit pilihan Anda.
+                        Detail lengkap pengajuan kunjungan rumah sakit Anda dapat ditemukan di sini. Silakan tinjau status dan informasi terkait setiap pengajuan yang telah Anda buat.
                     </p>
                 </div>
             </div>
@@ -78,7 +87,38 @@ if(!$query) {
         <!-- Content Section -->
         <div class="container mx-auto px-6 lg:px-12 py-8 pb-20">
             
-            <div class="space-y-5 max-w-5xl mx-auto">
+            <!-- Filter dan Search Bar -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Daftar riwayat pengajuan</h2>
+                
+                <!-- Filter Kategori -->
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <button onclick="filterByCategory('Semua')" class="filter-btn px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-md" data-category="Semua">
+                        Semua
+                    </button>
+                    <?php 
+                    // Tampilkan tombol kategori secara dinamis dari database
+                    while($kategori = mysqli_fetch_array($query_kategori)): 
+                    ?>
+                        <button onclick="filterByCategory('<?= htmlspecialchars($kategori['kategori']) ?>')" 
+                                class="filter-btn px-5 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-100 transition border border-gray-300" 
+                                data-category="<?= htmlspecialchars($kategori['kategori']) ?>">
+                            <?= htmlspecialchars($kategori['kategori']) ?>
+                        </button>
+                    <?php endwhile; ?>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex gap-3">
+                    <input type="text" id="searchInput" placeholder="Cari Riwayat Pengajuan" onkeyup="searchRiwayat()"
+                        class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none text-gray-700 placeholder-gray-400">
+                    <button onclick="searchRiwayat()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition shadow-md">
+                        Cari
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-5">
 
                 <?php if(mysqli_num_rows($query) > 0): ?>
                     <?php while($row = mysqli_fetch_array($query)): ?>
@@ -112,7 +152,12 @@ if(!$query) {
                         $hari = date('l', strtotime($row['tanggal_kunjungan'])); // Nama hari inggris
                         ?>
 
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all overflow-hidden flex flex-col md:flex-row group">
+                        <div onclick='openDetailKunjungan(<?= json_encode($row) ?>)' 
+                             class="riwayat-card bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all overflow-hidden flex flex-col md:flex-row group cursor-pointer"
+                             data-category="<?= htmlspecialchars($row['kategori']) ?>"
+                             data-nama-rs="<?= strtolower(htmlspecialchars($row['nama_rs'])) ?>"
+                             data-nama-layanan="<?= strtolower(htmlspecialchars($row['nama_layanan'])) ?>"
+                             data-nama-pasien="<?= strtolower(htmlspecialchars($row['nama_pasien'])) ?>">
                             
                             <div class="w-full md:w-1.5 h-2 md:h-auto <?= $border_left ?>"></div>
 
@@ -169,16 +214,16 @@ if(!$query) {
                             </div>
 
                             <div class="p-5 flex flex-col justify-center gap-2 border-l border-gray-100 bg-gray-50/30">
-                                <button onclick='openDetailKunjungan(<?= json_encode($row) ?>)' class="w-full md:w-auto px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 text-xs font-bold rounded-xl hover:border-finders-blue hover:text-finders-blue transition shadow-sm flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-info-circle"></i>
-                                    <span>Detail Kunjungan</span>
-                                </button>
-                                
                                 <?php if($row['status'] == 'Dikonfirmasi'): ?>
-                                    <a href="#" class="w-full md:w-auto px-4 py-2 bg-finders-green hover:bg-green-600 text-white text-xs font-bold rounded-xl transition text-center shadow-green-200 shadow-lg flex items-center justify-center gap-2">
+                                    <a href="#" onclick="event.stopPropagation()" class="w-full md:w-auto px-4 py-2 bg-finders-green hover:bg-green-600 text-white text-xs font-bold rounded-xl transition text-center shadow-green-200 shadow-lg flex items-center justify-center gap-2">
                                         <i class="fa-solid fa-print"></i> E-Ticket
                                     </a>
                                 <?php endif; ?>
+                                
+                                <button onclick='event.stopPropagation(); openDetailKunjungan(<?= json_encode($row) ?>)' class="w-full md:w-auto px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 text-xs font-bold rounded-xl hover:border-finders-blue hover:text-finders-blue transition shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-info-circle"></i>
+                                    <span>Detail Kunjungan</span>
+                                </button>
                             </div>
 
                         </div>
@@ -258,8 +303,12 @@ if(!$query) {
                 document.getElementById('modalQueueSection').classList.remove('hidden');
                 document.getElementById('modalQueue').textContent = data.queue_number || '-';
                 document.getElementById('modalEstimasi').textContent = data.estimasi_jam || '08:00 - 10:00';
+                
+                // Tampilkan QR Code Section
+                document.getElementById('modalQRSection').classList.remove('hidden');
             } else {
                 document.getElementById('modalQueueSection').classList.add('hidden');
+                document.getElementById('modalQRSection').classList.add('hidden');
             }
 
             // Catatan
@@ -292,6 +341,69 @@ if(!$query) {
                 closeDetailModal();
             }
         });
+
+        // Fungsi untuk share ticket
+        function shareTicket() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'E-Ticket Kunjungan RS',
+                    text: 'Tiket kunjungan rumah sakit saya',
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                alert('Fitur share tidak didukung di browser ini');
+            }
+        }
+
+        // Fungsi untuk save ticket
+        function saveTicket() {
+            alert('Fitur simpan tiket akan segera tersedia');
+        }
+
+        // Filter by Category
+        function filterByCategory(category) {
+            const cards = document.querySelectorAll('.riwayat-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update button styles
+            buttons.forEach(btn => {
+                if(btn.dataset.category === category) {
+                    btn.className = 'filter-btn px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-md';
+                } else {
+                    btn.className = 'filter-btn px-5 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-100 transition border border-gray-300';
+                }
+            });
+            
+            // Filter cards
+            cards.forEach(card => {
+                if(category === 'Semua') {
+                    card.style.display = 'flex';
+                } else {
+                    if(card.dataset.category === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Search Function
+        function searchRiwayat() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.riwayat-card');
+            
+            cards.forEach(card => {
+                const namaRs = card.dataset.namaRs;
+                const namaLayanan = card.dataset.namaLayanan;
+                const namaPasien = card.dataset.namaPasien;
+                
+                if(namaRs.includes(searchValue) || namaLayanan.includes(searchValue) || namaPasien.includes(searchValue)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
     </script>
 
 </body>
