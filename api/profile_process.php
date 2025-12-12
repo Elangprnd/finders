@@ -69,8 +69,20 @@ $update_query = "UPDATE akun_user SET
                  email = '$email',
                  no_telpon = '$no_telpon'";
 
-// Jika password baru diisi, update juga password
+// Jika password baru diisi, validasi dan update password
 if(!empty($password_baru)) {
+    // Validasi konfirmasi password (jika ada)
+    if(isset($_POST['konfirmasi_password_baru'])) {
+        $konfirmasi_password_baru = $_POST['konfirmasi_password_baru'];
+        if($password_baru !== $konfirmasi_password_baru) {
+            $_SESSION['msg_type'] = 'error';
+            $_SESSION['msg_content'] = 'Password baru dan konfirmasi password tidak cocok!';
+            header("Location: ../profile.php");
+            exit;
+        }
+    }
+    
+    // Hash password baru dengan bcrypt
     $password_hash = password_hash($password_baru, PASSWORD_DEFAULT);
     $update_query .= ", password = '$password_hash'";
 }

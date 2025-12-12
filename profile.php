@@ -93,12 +93,12 @@ unset($_SESSION['msg_content']);
                                 <p class="text-gray-900 font-semibold text-lg"><?= htmlspecialchars($user['nama']) ?></p>
                             </div>
                             <button type="button" onclick="openEditModal('nama')" 
-                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all">
-                                Edit
+                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all w-40">
+                                Ubah Nama
                             </button>
                         </div>
 
-                        <!-- Email (Hidden with Reveal) -->
+                        <!-- E-mail (Hidden with Reveal) -->
                         <div class="flex items-center justify-between py-5 border-b border-gray-100 hover:bg-gray-50 px-4 rounded-lg transition-all">
                             <div class="flex-1">
                                 <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Email</label>
@@ -114,15 +114,15 @@ unset($_SESSION['msg_content']);
                                 </div>
                             </div>
                             <button type="button" onclick="openEditModal('email')" 
-                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all">
-                                Edit
+                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all w-40">
+                                Ubah Email
                             </button>
                         </div>
 
                         <!-- Phone Number (Hidden with Reveal) -->
                         <div class="flex items-center justify-between py-5 border-b border-gray-100 hover:bg-gray-50 px-4 rounded-lg transition-all">
                             <div class="flex-1">
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nomor Handphone</label>
                                 <div class="flex items-center gap-4">
                                     <p class="text-gray-900 font-semibold text-lg">
                                         <span id="phoneHidden">**********<?= substr($user['no_telpon'], -4) ?></span>
@@ -136,10 +136,22 @@ unset($_SESSION['msg_content']);
                             </div>
                             <div class="flex gap-3">
                                 <button type="button" onclick="openEditModal('phone')" 
-                                        class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all">
-                                    Edit
+                                        class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all w-40">
+                                    Ubah Nomor HP
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="flex items-center justify-between py-5 border-b border-gray-100 hover:bg-gray-50 px-4 rounded-lg transition-all">
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Password</label>
+                                <p class="text-gray-900 font-semibold text-lg">••••••••••••</p>
+                            </div>
+                            <button type="button" onclick="openEditModal('password')" 
+                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all w-40">
+                                Ubah Password
+                            </button>
                         </div>
 
 
@@ -278,108 +290,77 @@ unset($_SESSION['msg_content']);
                 </div>
             </div>
 
+            <!-- Floating Modal untuk Ubah Password -->
+            <div id="editPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 transform transition-all scale-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Ubah Password</h3>
+                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form action="api/profile_process.php" method="POST" class="space-y-5" onsubmit="return validatePasswordChange()">
+                        <!-- Hidden Fields to keep other data -->
+                        <input type="hidden" name="nama" value="<?= htmlspecialchars($user['nama']) ?>">
+                        <input type="hidden" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+                        <input type="hidden" name="no_telpon" value="<?= htmlspecialchars($user['no_telpon']) ?>">
+
+                        <!-- Password Lama -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Password Lama</label>
+                            <input type="password" name="password_lama" required
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="Masukkan password lama Anda">
+                        </div>
+
+                        <div class="border-t border-gray-100 my-4"></div>
+
+                        <!-- Password Baru -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Password Baru</label>
+                            <input type="password" name="password_baru" id="password_baru" required minlength="6"
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="Masukkan password baru (min. 6 karakter)">
+                        </div>
+
+                        <!-- Konfirmasi Password Baru -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                            <input type="password" name="konfirmasi_password_baru" id="konfirmasi_password_baru" required minlength="6"
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="Ulangi password baru Anda">
+                        </div>
+
+                        <!-- Info Box -->
+                        <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+                            <div class="flex gap-2">
+                                <i class="fa-solid fa-info-circle text-yellow-600 mt-1"></i>
+                                <div>
+                                    <p class="text-xs font-bold text-yellow-800 mb-1">Syarat Password:</p>
+                                    <ul class="text-xs text-yellow-700 space-y-1">
+                                        <li>• Minimal 6 karakter</li>
+                                        <li>• Disarankan kombinasi huruf, angka, dan simbol</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 mt-8">
+                            <button type="button" onclick="closeEditModal()" class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
+                                Simpan Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <script>
-        // ==============================================
-        // MODAL FUNCTIONS
-        // ==============================================
-        
-        function openEditModal(type) {
-            // Close all first
-            closeEditModal();
-            
-            let modalId = '';
-            if(type === 'nama') modalId = 'editNameModal';
-            if(type === 'email') modalId = 'editEmailModal';
-            if(type === 'phone') modalId = 'editPhoneModal';
-            
-            if(modalId) {
-                const modal = document.getElementById(modalId);
-                if(modal) {
-                    modal.classList.remove('hidden');
-                    // Focus input
-                    const input = modal.querySelector('input:not([type="hidden"])');
-                    if(input) setTimeout(() => input.focus(), 100);
-                }
-            }
-        }
-        
-        function closeEditModal() {
-            const modals = ['editNameModal', 'editEmailModal', 'editPhoneModal'];
-            modals.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-        }
-        
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            if (event.target.id === 'editNameModal' || 
-                event.target.id === 'editEmailModal' || 
-                event.target.id === 'editPhoneModal') {
-                closeEditModal();
-            }
-        });
-
-        // ==============================================
-        // REVEAL/HIDE FUNCTIONS
-        // ==============================================
-        
-        /**
-         * Toggle reveal for email and phone
-         * @param {string} type - 'email' or 'phone'
-         */
-        function toggleReveal(type) {
-            if (type === 'email') {
-                const hidden = document.getElementById('emailHidden');
-                const revealed = document.getElementById('emailRevealed');
-                const revealText = document.getElementById('emailRevealText');
-                
-                if (hidden.style.display === 'none') {
-                    hidden.style.display = 'inline';
-                    revealed.style.display = 'none';
-                    revealText.textContent = 'Perlihatkan';
-                } else {
-                    hidden.style.display = 'none';
-                    revealed.style.display = 'inline';
-                    revealText.textContent = 'Sembunyikan';
-                }
-            } else if (type === 'phone') {
-                const hidden = document.getElementById('phoneHidden');
-                const revealed = document.getElementById('phoneRevealed');
-                const revealText = document.getElementById('phoneRevealText');
-                
-                if (hidden.style.display === 'none') {
-                    hidden.style.display = 'inline';
-                    revealed.style.display = 'none';
-                    revealText.textContent = 'Perlihatkan';
-                } else {
-                    hidden.style.display = 'none';
-                    revealed.style.display = 'inline';
-                    revealText.textContent = 'Sembunyikan';
-                }
-            }
-        }
-        
-        // ==============================================
-        // ANIMATIONS
-        // ==============================================
-        
-        /**
-         * Smooth scroll animations on page load
-         */
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add fade-in animation classes
-            const elements = document.querySelectorAll('.animate-fade-in-up, .animate-fade-in-down');
-            elements.forEach((el, index) => {
-                setTimeout(() => {
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
-    </script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
