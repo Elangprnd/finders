@@ -256,8 +256,13 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
                         PENDAFTARAN BERHASIL
                     </h2>
                     
+                    <div id="modalQueueContainer" class="bg-gradient-to-br from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl shadow-lg mb-4 hidden">
+                        <p class="text-xs font-semibold uppercase mb-1 opacity-90">Nomor Antrian Anda</p>
+                        <p id="modalQueueNumber" class="text-3xl font-bold tracking-wider">-</p>
+                    </div>
+                    
                     <p class="text-gray-500 mb-8 max-w-md">
-                        Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.
+                        <span id="modalSuccessMessage">Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.</span>
                     </p>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md mb-8 relative overflow-hidden">
@@ -402,6 +407,16 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
             document.getElementById('modalRsName').textContent = data.rs_name;
             document.getElementById('modalLayananName').textContent = data.layanan_name;
             document.getElementById('modalTanggal').textContent = formattedDate;
+            
+            // Tampilkan nomor antrian jika ada
+            if(data.queue_number) {
+                document.getElementById('modalQueueNumber').textContent = data.queue_number;
+                document.getElementById('modalQueueContainer').classList.remove('hidden');
+                document.getElementById('modalSuccessMessage').textContent = 'Simpan nomor antrian Anda. Informasi dapat dicek pada menu Riwayat.';
+            } else {
+                document.getElementById('modalQueueContainer').classList.add('hidden');
+                document.getElementById('modalSuccessMessage').textContent = 'Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.';
+            }
             
             // Tampilkan modal
             document.getElementById('modalBookingBerhasil').classList.remove('hidden');

@@ -4,6 +4,7 @@ session_start();
 $rs_name = $_GET['rs'] ?? 'Rumah Sakit';
 $layanan = $_GET['layanan'] ?? 'Layanan Medis';
 $tanggal = $_GET['tgl'] ?? date('Y-m-d');
+$queue_number = $_GET['queue'] ?? null;
 ?>
 
 <!DOCTYPE html>
@@ -45,8 +46,15 @@ $tanggal = $_GET['tgl'] ?? date('Y-m-d');
                 PENDAFTARAN BERHASIL
             </h2>
             
+            <?php if($queue_number): ?>
+            <div class="bg-gradient-to-br from-finders-blue to-blue-600 text-white px-6 py-3 rounded-xl shadow-lg mb-4">
+                <p class="text-xs font-semibold uppercase mb-1 opacity-90">Nomor Antrian Anda</p>
+                <p class="text-3xl font-bold tracking-wider"><?= htmlspecialchars($queue_number) ?></p>
+            </div>
+            <?php endif; ?>
+            
             <p class="text-gray-500 mb-8 max-w-md">
-                Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.
+                <?= $queue_number ? 'Simpan nomor antrian Anda. Informasi dapat dicek pada menu Riwayat.' : 'Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.' ?>
             </p>
 
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md mb-8 relative overflow-hidden">

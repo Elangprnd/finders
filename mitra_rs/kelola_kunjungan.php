@@ -10,6 +10,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mitra') {
 
 $id_rs = $_SESSION['id_rs'];
 
+// Fungsi untuk mengubah nama hari ke bahasa Indonesia
+function getNamaHari($tanggal) {
+    $hari_inggris = date('l', strtotime($tanggal));
+    $hari_indonesia = [
+        'Sunday' => 'Minggu',
+        'Monday' => 'Senin',
+        'Tuesday' => 'Selasa',
+        'Wednesday' => 'Rabu',
+        'Thursday' => 'Kamis',
+        'Friday' => 'Jumat',
+        'Saturday' => 'Sabtu'
+    ];
+    return $hari_indonesia[$hari_inggris] ?? $hari_inggris;
+}
+
 // --- LOGIKA FILTER & PENCARIAN ---
 $filter_tanggal = $_GET['tanggal'] ?? ''; 
 $filter_status = $_GET['status'] ?? 'Semua';
@@ -33,6 +48,23 @@ if ($search) {
 $sql .= " ORDER BY p.jam_mulai ASC, p.dibuat_pada ASC";
 $result = mysqli_query($conn, $sql);
 
+// Hitung statistik untuk cards
+$stats_sql = "SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN status = 'Menunggu' THEN 1 ELSE 0 END) as menunggu,
+    SUM(CASE WHEN status = 'Dikonfirmasi' THEN 1 ELSE 0 END) as dikonfirmasi,
+    SUM(CASE WHEN status = 'Selesai' THEN 1 ELSE 0 END) as selesai,
+    SUM(CASE WHEN status = 'Dibatalkan' THEN 1 ELSE 0 END) as dibatalkan
+    FROM data_penjadwalan 
+    WHERE id_rs = '$id_rs'";
+
+if ($filter_tanggal !== '') {
+    $stats_sql .= " AND tanggal_kunjungan = '$filter_tanggal'";
+}
+
+$stats_result = mysqli_query($conn, $stats_sql);
+$stats = mysqli_fetch_assoc($stats_result);
+
 $page_title = "Kelola Kunjungan";
 $page_subtitle = "Verifikasi dan atur antrean pasien.";
 ?>
@@ -48,9 +80,10 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         table td, table th {
             border-right: 1px solid #f3f4f6;
@@ -62,6 +95,14 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
         table tbody tr {
             border-bottom: 1px solid #f3f4f6;
         }
+        
+        /* Responsive table headers */
+        @media (min-width: 1536px) {
+            table th, table td {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
@@ -69,9 +110,9 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
     <?php include 'includes/sidebar.php'; ?>
 
     <main class="flex-1 overflow-y-auto flex flex-col md:pl-20">
-        <div class="flex-1 p-6 lg:p-10 w-full max-w-7xl mx-auto">
+        <div class="flex-1 p-4 md:p-6 lg:p-8 xl:px-12 w-full">
             
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800 tracking-tight"><?= $page_title ?></h2>
                     <p class="text-sm text-slate-500 mt-1"><?= $page_subtitle ?></p>
@@ -79,14 +120,14 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
             </header>
 
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
-                <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    <div>
+                <form method="GET" class="flex flex-wrap gap-4 items-end">
+                    <div class="flex-1 min-w-[200px]">
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal</label>
                         <input type="date" name="tanggal" value="<?= $filter_tanggal ?>" 
                                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
                     </div>
 
-                    <div>
+                    <div class="flex-1 min-w-[200px]">
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Status</label>
                         <select name="status" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
                             <option value="Semua">Semua Status</option>
@@ -97,21 +138,18 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                         </select>
                     </div>
 
-                    <div>
+                    <div class="flex-1 min-w-[200px]">
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Cari Pasien</label>
                         <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Nama / No. HP"
                                class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm">
                     </div>
 
-                    <div>
-                        <a href="kelola_kunjungan.php" class="block w-full text-center py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition text-sm font-semibold">
-                            <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+                    <div class="flex gap-2">
+                        <a href="kelola_kunjungan.php" class="inline-flex items-center justify-center py-2 px-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition text-sm font-semibold">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset
                         </a>
-                    </div>
-
-                    <div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition text-sm">
-                            <i class="fa-solid fa-filter mr-1"></i> Filter
+                        <button type="submit" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-8 rounded-xl transition text-sm">
+                            <i class="fa-solid fa-filter mr-1.5"></i> Filter
                         </button>
                     </div>
 
@@ -120,40 +158,54 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
 
             <div class="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold tracking-wider">
+                    <table class="w-full text-left border-collapse min-w-[1200px]">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 text-xs uppercase font-semibold tracking-wider">
                             <tr>
-                                <th class="px-6 py-4">Sesi Jam</th>
-                                <th class="px-6 py-4">Pasien</th>
-                                <th class="px-6 py-4">Catatan</th>
-                                <th class="px-6 py-4 text-center">Layanan</th>
-                                <th class="px-6 py-4 text-center">Antrean</th>
-                                <th class="px-6 py-4 text-center">Status</th>
-                                <th class="px-6 py-4 text-center">Aksi</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-32">Tanggal</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-36">Sesi Jam</th>
+                                <th class="px-4 xl:px-6 py-4 text-left">Pasien</th>
+                                <th class="px-4 xl:px-6 py-4 text-left">Catatan</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-36">Layanan</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-20">Antrean</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-32">Status</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-36">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 text-sm text-gray-600">
                             <?php if(mysqli_num_rows($result) > 0): ?>
                                 <?php while($row = mysqli_fetch_assoc($result)): ?>
-                                    <tr class="hover:bg-gray-50/80 transition-colors">
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                    <tr class="hover:bg-blue-50/30 transition-colors">
+                                        <td class="px-4 xl:px-6 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col items-center">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <p class="font-bold text-gray-700">
+                                                        <?= $row['tanggal_kunjungan'] ? date('d/m/Y', strtotime($row['tanggal_kunjungan'])) : '-' ?>
+                                                    </p>
+                                                </div>
+                                                <p class="text-xs text-gray-400">
+                                                    <?= $row['tanggal_kunjungan'] ? getNamaHari($row['tanggal_kunjungan']) : '' ?>
+                                                </p>
+                                            </div>
+                                        </td>
+
+                                        <td class="px-4 xl:px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center gap-2">
                                                 <i class="fa-regular fa-clock text-blue-500"></i>
                                                 <span class="font-bold text-gray-700">
                                                     <?= $row['jam_mulai'] ? date('H:i', strtotime($row['jam_mulai'])) : '-' ?>
                                                 </span>
                                             </div>
-                                            <span class="text-xs text-gray-400 pl-6">
+                                            <span class="text-xs text-gray-700 pl-6">
                                                 s/d <?= $row['jam_selesai'] ? date('H:i', strtotime($row['jam_selesai'])) : '-' ?>
                                             </span>
                                         </td>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 xl:px-6 py-4">
                                             <p class="font-bold text-gray-800"><?= htmlspecialchars($row['nama_pasien']) ?></p>
                                             <p class="text-xs text-gray-400"><?= $row['no_telpon'] ?></p>
                                         </td>
 
-                                        <td class="px-6 py-4">
+                                        <td class="px-4 xl:px-6 py-4">
                                             <?php if($row['catatan']): ?>
                                                 <div class="max-w-xs">
                                                     <span class="inline-block px-2 py-1 bg-yellow-50 text-yellow-700 text-xs rounded border border-yellow-200">
@@ -166,13 +218,13 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                                             <?php endif; ?>
                                         </td>
 
-                                        <td class="px-6 py-4 text-center">
-                                            <span class="bg-blue-50 text-blue-700 py-1 px-3 rounded-full text-xs font-semibold">
+                                        <td class="px-4 xl:px-6 py-4 text-center">
+                                            <span class="bg-blue-50 text-blue-700 py-1 px-3 rounded-full text-xs font-semibold inline-block">
                                                 <?= htmlspecialchars($row['nama_layanan']) ?>
                                             </span>
                                         </td>
 
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-4 xl:px-6 py-4 text-center">
                                             <?php if($row['queue_number']): ?>
                                                 <span class="text-lg font-bold text-slate-700"><?= $row['queue_number'] ?></span>
                                             <?php else: ?>
@@ -180,7 +232,7 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                                             <?php endif; ?>
                                         </td>
 
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-4 xl:px-6 py-4 text-center">
                                             <?php 
                                                 $status_classes = [
                                                     'Menunggu' => 'bg-yellow-100 text-yellow-800',
@@ -195,7 +247,7 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                                             </span>
                                         </td>
 
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-4 xl:px-6 py-4 text-center">
                                             <?php if($row['status'] == 'Menunggu'): ?>
                                                 <div class="flex justify-center gap-2">
                                                     <button onclick="openModalKonfirmasi(<?= $row['id_penjadwalan'] ?>, '<?= htmlspecialchars($row['nama_pasien']) ?>')" 
@@ -220,7 +272,7 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="8" class="px-4 xl:px-6 py-12 text-center text-gray-500">
                                         <i class="fa-regular fa-folder-open text-4xl mb-3 opacity-30 block"></i>
                                         Tidak ada data kunjungan yang sesuai filter.
                                     </td>

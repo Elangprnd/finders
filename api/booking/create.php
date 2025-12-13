@@ -54,13 +54,35 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Menggunakan strtotime untuk menambah 2 jam (7200 detik)
     $jam_selesai = date('H:i:s', strtotime($jam_mulai) + (2 * 60 * 60));
     
+    // --- GENERATE NOMOR ANTRIAN ---
+    // Ambil nomor antrian terakhir untuk tanggal dan layanan yang sama
+    $query_last_queue = mysqli_query($conn, 
+        "SELECT queue_number FROM data_penjadwalan 
+         WHERE id_layanan = '$id_layanan' 
+         AND tanggal_kunjungan = '$tanggal_kunjungan' 
+         AND queue_number IS NOT NULL 
+         ORDER BY id_penjadwalan DESC 
+         LIMIT 1"
+    );
+    
+    $queue_number = null;
+    if($queue_last = mysqli_fetch_assoc($query_last_queue)) {
+        // Ekstrak nomor dari format F-XXX atau format lainnya
+        $last_number = (int)substr($queue_last['queue_number'], 2); // Ambil angka setelah "F-"
+        $new_number = $last_number + 1;
+        $queue_number = 'F-' . str_pad($new_number, 3, '0', STR_PAD_LEFT);
+    } else {
+        // Jika belum ada antrian untuk tanggal dan layanan ini, mulai dari F-001
+        $queue_number = 'F-001';
+    }
+    
     // 4. Insert ke Database
-    // Menambahkan kolom jam_mulai dan jam_selesai
+    // Menambahkan kolom jam_mulai, jam_selesai, dan queue_number
     // Menggunakan status 'Menunggu' sesuai ENUM database
     $query = "INSERT INTO data_penjadwalan 
-              (id_user, id_rs, id_layanan, nama_pasien, tanggal_kunjungan, jam_mulai, jam_selesai, catatan, status, dibuat_pada) 
+              (id_user, id_rs, id_layanan, nama_pasien, tanggal_kunjungan, jam_mulai, jam_selesai, catatan, status, queue_number, dibuat_pada) 
               VALUES 
-              ('$id_user', '$id_rs', '$id_layanan', '$nama_pasien', '$tanggal_kunjungan', '$jam_mulai', '$jam_selesai', '$catatan', 'Menunggu', NOW())";
+              ('$id_user', '$id_rs', '$id_layanan', '$nama_pasien', '$tanggal_kunjungan', '$jam_mulai', '$jam_selesai', '$catatan', 'Menunggu', '$queue_number', NOW())";
     
     if(mysqli_query($conn, $query)) {
         // Ambil nama RS dan layanan untuk response
@@ -85,7 +107,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'layanan_name' => $lay_name,
                 'tanggal' => $tanggal_kunjungan,
                 'jam_mulai' => $jam_mulai,
-                'nama_pasien' => $nama_pasien
+                'nama_pasien' => $nama_pasien,
+                'queue_number' => $queue_number
             ]
         ]);
     } else {
