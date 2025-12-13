@@ -101,7 +101,7 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
                         <form action="api/booking/create.php" method="POST" class="space-y-6">
                             
                             <!-- Info Alert -->
-                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                            <div class="bg-blue-50 p-4 rounded-lg">
                                 <div class="flex items-start gap-3">
                                     <i class="fa-solid fa-info-circle text-blue-500 mt-1"></i>
                                     <div class="text-sm text-blue-800">
@@ -226,86 +226,69 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
         
         <!-- Modal Booking Berhasil -->
         <div id="modalBookingBerhasil" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div class="bg-white/95 backdrop-blur-md w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row animate-scale-in">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center transform transition-all scale-100">
                 
-                <!-- Left Side - Image -->
-                <div class="w-full lg:w-5/12 relative min-h-[200px] lg:min-h-full bg-[#1e3a8a]">
-                    <img src="assets/img/rumahsakit_bg.png" alt="Hospital Building" class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-overlay">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#1e3a8a]/90 to-transparent"></div>
-                    
-                    <div class="absolute top-8 left-8 z-20">
-                        <h1 class="text-3xl font-bold text-white leading-tight drop-shadow-md">
-                            Pengajuan <br>Kunjungan
-                        </h1>
-                    </div>
+                <!-- Close Button -->
+                <button onclick="closeModalBooking()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+                
+                <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 mx-auto border-4 border-green-100">
+                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
                 </div>
 
-                <!-- Right Side - Content -->
-                <div class="w-full lg:w-7/12 p-8 lg:p-12 flex flex-col items-center justify-center text-center bg-gray-50/50 relative">
-                    
-                    <!-- Close Button -->
-                    <button onclick="closeModalBooking()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
-                    
-                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 animate-bounce-slow border-4 border-green-100">
-                        <i class="fa-solid fa-check text-4xl text-green-500"></i>
-                    </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2 uppercase tracking-wide">
+                    PENDAFTARAN BERHASIL
+                </h2>
+                
+                <div id="modalQueueContainer" class="bg-gradient-to-br from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl shadow-lg mb-4 hidden">
+                    <p class="text-xs font-semibold uppercase mb-1 opacity-90">Nomor Antrian Anda</p>
+                    <p id="modalQueueNumber" class="text-3xl font-bold tracking-wider">-</p>
+                </div>
+                
+                <p class="text-gray-500 mb-8">
+                    <span id="modalSuccessMessage">Nomor antrian Anda dapat dicek pada menu Riwayat Kunjungan.</span>
+                </p>
 
-                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-2 uppercase tracking-wide">
-                        PENDAFTARAN BERHASIL
-                    </h2>
-                    
-                    <div id="modalQueueContainer" class="bg-gradient-to-br from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl shadow-lg mb-4 hidden">
-                        <p class="text-xs font-semibold uppercase mb-1 opacity-90">Nomor Antrian Anda</p>
-                        <p id="modalQueueNumber" class="text-3xl font-bold tracking-wider">-</p>
-                    </div>
-                    
-                    <p class="text-gray-500 mb-8 max-w-md">
-                        <span id="modalSuccessMessage">Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.</span>
-                    </p>
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 w-full mb-8">
+                    <div class="grid grid-cols-2 gap-y-4 text-left text-sm">
+                        
+                        <div>
+                            <span class="block text-gray-400 text-xs font-bold uppercase mb-1">RS Tujuan</span>
+                            <span id="modalRsName" class="font-bold text-gray-800 text-base block truncate pr-2">-</span>
+                        </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md mb-8 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                        <div class="grid grid-cols-2 gap-y-4 text-left text-sm">
-                            
-                            <div>
-                                <span class="block text-gray-400 text-xs font-bold uppercase mb-1">RS Tujuan</span>
-                                <span id="modalRsName" class="font-bold text-gray-800 text-base block truncate pr-2">-</span>
-                            </div>
+                        <div class="text-right">
+                            <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Layanan</span>
+                            <span id="modalLayananName" class="font-bold text-gray-800 text-base">-</span>
+                        </div>
 
-                            <div class="text-right">
-                                <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Layanan</span>
-                                <span id="modalLayananName" class="font-bold text-gray-800 text-base">-</span>
-                            </div>
+                        <div class="col-span-2 border-t border-gray-200 my-1"></div>
 
-                            <div class="col-span-2 border-t border-gray-100 my-1"></div>
+                        <div>
+                            <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Tanggal</span>
+                            <span id="modalTanggal" class="font-bold text-gray-800 text-base">-</span>
+                        </div>
 
-                            <div>
-                                <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Tanggal</span>
-                                <span id="modalTanggal" class="font-bold text-gray-800 text-base">-</span>
-                            </div>
-
-                            <div class="text-right">
-                                <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Status</span>
-                                <span class="inline-block px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 text-xs font-bold rounded-lg">
-                                    MENUNGGU
-                                </span>
-                            </div>
+                        <div class="text-right">
+                            <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Status</span>
+                            <span class="inline-block px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 text-xs font-bold rounded-lg">
+                                MENUNGGU
+                            </span>
                         </div>
                     </div>
-
-                    <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                        <a href="index.php" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:-translate-y-1 text-center flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-house"></i> Dashboard
-                        </a>
-                        
-                        <a href="riwayat_pengajuan.php" class="flex-1 bg-white border-2 border-gray-200 hover:border-blue-600 text-gray-600 hover:text-blue-600 font-bold py-3 px-6 rounded-xl transition-all text-center flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat
-                        </a>
-                    </div>
-
                 </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full">
+                    <a href="booking.php" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </a>
+                    
+                    <a href="riwayat_pengajuan.php" class="flex-1 bg-white border-2 border-gray-300 hover:border-blue-600 text-gray-600 hover:text-blue-600 font-semibold py-3 px-6 rounded-xl transition-all text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Riwayat
+                    </a>
+                </div>
+
             </div>
         </div>
         
@@ -412,7 +395,7 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
             if(data.queue_number) {
                 document.getElementById('modalQueueNumber').textContent = data.queue_number;
                 document.getElementById('modalQueueContainer').classList.remove('hidden');
-                document.getElementById('modalSuccessMessage').textContent = 'Simpan nomor antrian Anda. Informasi dapat dicek pada menu Riwayat.';
+                document.getElementById('modalSuccessMessage').textContent = 'Simpan nomor antrian Anda. Informasi dapat dicek pada menu Riwayat Kunjungan.';
             } else {
                 document.getElementById('modalQueueContainer').classList.add('hidden');
                 document.getElementById('modalSuccessMessage').textContent = 'Nomor antrian Anda akan dikirimkan melalui WhatsApp dan dapat dicek pada menu Riwayat.';
