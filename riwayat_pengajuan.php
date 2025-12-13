@@ -212,16 +212,16 @@ if(!$query) {
                             </div>
 
                             <div class="p-5 flex flex-col justify-center gap-2 border-l border-gray-100 bg-gray-50/30">
-                                <?php if($row['status'] == 'Dikonfirmasi'): ?>
-                                    <a href="#" onclick="event.stopPropagation()" class="w-full md:w-auto px-4 py-2 bg-finders-green hover:bg-green-600 text-white text-xs font-bold rounded-xl transition text-center shadow-green-200 shadow-lg flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-print"></i> E-Ticket
-                                    </a>
-                                <?php endif; ?>
-                                
                                 <button onclick='event.stopPropagation(); openDetailKunjungan(<?= json_encode($row) ?>)' class="w-full md:w-auto px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 text-xs font-bold rounded-xl hover:border-finders-blue hover:text-finders-blue transition shadow-sm flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-info-circle"></i>
                                     <span>Detail Kunjungan</span>
                                 </button>
+
+                                <?php if($row['status'] == 'Dikonfirmasi'): ?>
+                                    <a href="#" onclick="event.stopPropagation()" class="w-full md:w-auto px-4 py-2 bg-finders-green hover:bg-green-600 text-white text-xs font-bold rounded-xl transition text-center shadow-green-200 shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-print"></i> Cetak Tiket
+                                    </a>
+                                <?php endif; ?>
                             </div>
 
                         </div>
@@ -249,7 +249,6 @@ if(!$query) {
 
     </main>
 
-    <!-- Include Modal Detail Kunjungan -->
     <?php include 'detail_riwayat_kunjungan.php'; ?>
     
     <script src="assets/js/script.js"></script>

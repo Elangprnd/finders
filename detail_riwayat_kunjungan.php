@@ -133,7 +133,7 @@
                 <button onclick="shareTicket()" class="flex-1 px-6 py-3 bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-all">
                     Share
                 </button>
-                <button onclick="saveTicket()" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30">
+                <button onclick="saveTicket()" class="flex-1 px-6 py-3 bg-finders-green hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30">
                     Simpan Tiket
                 </button>
             </div>
