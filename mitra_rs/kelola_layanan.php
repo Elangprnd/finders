@@ -28,7 +28,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Layanan - Mitra FindeRS</title>
+    <title>Kelola Layanan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -119,6 +119,10 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                     <h2 class="text-2xl font-bold text-slate-800 tracking-tight"><?= $page_title ?></h2>
                     <p class="text-sm text-slate-500 mt-1"><?= $page_subtitle ?></p>
                 </div>
+                <button onclick="openModalTambahLayanan()" 
+                        class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Tambah Layanan Baru
+                </button>
             </header>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -186,8 +190,12 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                 <?php else: ?>
                     <div class="col-span-full py-16 text-center text-gray-500 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
                         <i class="fa-solid fa-box-open text-5xl mb-4 opacity-20"></i>
-                        <p class="text-lg font-medium">Belum ada layanan yang terdaftar untuk Rumah Sakit ini.</p>
-                        <p class="text-sm mt-2">Hubungi admin untuk menambahkan layanan baru.</p>
+                        <p class="text-lg font-medium mb-2">Belum ada layanan yang terdaftar untuk Rumah Sakit ini.</p>
+                        <p class="text-sm mb-6">Mulai tambahkan layanan medis yang tersedia di rumah sakit Anda.</p>
+                        <button onclick="openModalTambahLayanan()" 
+                                class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition inline-flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Layanan Pertama
+                        </button>
                     </div>
                 <?php endif; ?>
 
@@ -261,7 +269,140 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
         </div>
     </div>
 
+    <!-- Modal Tambah Layanan Baru -->
+    <div id="modalTambahLayanan" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800">Tambah Layanan Baru</h3>
+                    <p class="text-sm text-gray-500">Tambahkan layanan medis untuk rumah sakit Anda</p>
+                </div>
+                <button onclick="closeModal('modalTambahLayanan')" class="w-8 h-8 flex items-center justify-center bg-white rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition shadow-sm border border-gray-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="formTambahLayanan" onsubmit="simpanLayananBaru(event)">
+                <div class="p-6 space-y-4">
+                    
+                    <div>
+                        <label for="nama_layanan" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Layanan <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               id="nama_layanan" 
+                               name="nama_layanan" 
+                               required
+                               placeholder="Contoh: Poliklinik Umum, UGD 24 Jam"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label for="kategori" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kategori <span class="text-red-500">*</span>
+                        </label>
+                        <select id="kategori" 
+                                name="kategori" 
+                                required
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="">-- Pilih Kategori --</option>
+                            <option value="Poliklinik">Poliklinik</option>
+                            <option value="Spesialis">Spesialis</option>
+                            <option value="Penunjang">Penunjang</option>
+                            <option value="Rawat Inap">Rawat Inap</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="ketersediaan" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Status Ketersediaan
+                        </label>
+                        <select id="ketersediaan" 
+                                name="ketersediaan" 
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="Tersedia">Tersedia</option>
+                            <option value="Tidak Tersedia">Tidak Tersedia</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                    <button type="button" 
+                            onclick="closeModal('modalTambahLayanan')" 
+                            class="px-6 py-2.5 border border-gray-300 text-gray-600 font-semibold rounded-xl hover:bg-white transition">
+                        Batal
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Layanan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // Buka Modal Tambah Layanan
+        function openModalTambahLayanan() {
+            const modal = document.getElementById('modalTambahLayanan');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Reset form
+            document.getElementById('formTambahLayanan').reset();
+        }
+
+        // Simpan Layanan Baru
+        function simpanLayananBaru(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            // Tampilkan loading state
+            const modal = document.getElementById('modalTambahLayanan');
+            const btnSimpan = modal.querySelector('button[type="submit"]');
+            const btnBatal = modal.querySelector('button[type="button"]');
+            const originalText = btnSimpan.innerHTML;
+            
+            btnSimpan.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...';
+            btnSimpan.disabled = true;
+            btnBatal.disabled = true;
+
+            fetch('../api/mitra/tambah_layanan.php', { 
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                if(data.success) {
+                    showNotification('Layanan berhasil ditambahkan!', 'success');
+                    
+                    setTimeout(() => {
+                        closeModal('modalTambahLayanan');
+                        // Reload halaman untuk menampilkan layanan baru
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('Gagal menambahkan layanan: ' + (data.message || 'Unknown error'), 'error');
+                    btnSimpan.innerHTML = originalText;
+                    btnSimpan.disabled = false;
+                    btnBatal.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                showNotification('Terjadi kesalahan koneksi', 'error');
+                btnSimpan.innerHTML = originalText;
+                btnSimpan.disabled = false;
+                btnBatal.disabled = false;
+            });
+        }
+
         // Update Status Layanan dengan Loading & Animation
         function updateStatus(id, isChecked) {
             const status = isChecked ? 'Tersedia' : 'Tidak Tersedia';
