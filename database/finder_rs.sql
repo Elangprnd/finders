@@ -40,7 +40,7 @@ CREATE TABLE `akun_admin` (
 --
 
 INSERT INTO `akun_admin` (`id_admin`, `username`, `email`, `password`, `role`) VALUES
-(1, 'superadmin', 'admin@example.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'super');
+(1, 'superadmin', 'admin@example.com', '$2y$12$LPz23QEs/jPeS7hxb1FEN.aN4SOdSSDTVJPu4YRt9cA/LgKMMsYmO', 'super');
 
 -- --------------------------------------------------------
 
