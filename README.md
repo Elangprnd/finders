@@ -6,7 +6,7 @@ Langkah ini berlaku baik untuk Windows maupun Linux.
 
 1.  **Siapkan Database**
     - Buka browser dan akses phpMyAdmin di `http://localhost/phpmyadmin`.
-    - Klik tab **Databases** (Basis Data).
+    - Klik tab **Databases**.
     - Buat database baru dengan nama: `finder_rs`.
     - Klik tombol **Create**.
 
