@@ -68,6 +68,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
     <title>Data Penjadwalan - Admin FindeRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles/style_admin.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
@@ -177,13 +178,12 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
     <!-- Modal Overlay untuk Update Status -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[999] flex items-center justify-center p-4">
         <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative">
-            <button onclick="closeModal()" 
-                class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <div class="p-6">
-                Memuat...
-            </div>
+        <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <div id="modalBody" class="p-6">
+            Memuat...
+        </div>
         </div>
     </div>
 
@@ -193,68 +193,95 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         openModal('jadwal_form.php?id=' + id);
     }
 
-    // ===== FUNGSI DELETE JADWAL =====
+    // ===== FUNGSI BARU: HANDLE SUBMIT VIA AJAX =====
+    // Fungsi ini akan dipanggil oleh form di dalam modal
+    function submitUpdateJadwal(event, id) {
+        event.preventDefault(); // Mencegah refresh halaman
+        
+        const form = document.getElementById('formUpdateJadwal');
+        const formData = new FormData(form);
+        const url = 'jadwal_form.php?id=' + id;
+        
+        // Ubah tombol jadi loading
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+        btn.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Cek apakah respon mengandung script sukses dari PHP
+            if (html.includes('alert("Status penjadwalan berhasil diupdate!");')) {
+                alert("Status penjadwalan berhasil diupdate!");
+                window.location.reload(); // Refresh halaman utama
+            } else {
+                // Jika error atau validasi gagal, tampilkan kembali form (dengan pesan error)
+                document.getElementById('modalBody').innerHTML = html;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan koneksi.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+
+    // ===== FUNGSI DELETE JADWAL (TETAP SAMA) =====
     function deleteJadwal(id) {
         if(confirm('Yakin ingin menghapus data penjadwalan ini?\n\nData tidak dapat dikembalikan!')) {
-            // Create form untuk POST request
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'jadwal_data.php';
-            
-            const inputId = document.createElement('input');
-            inputId.type = 'hidden';
-            inputId.name = 'delete_id';
-            inputId.value = id;
-            
-            form.appendChild(inputId);
-            document.body.appendChild(form);
-            form.submit();
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'jadwal_data.php';
+        const inputId = document.createElement('input');
+        inputId.type = 'hidden';
+        inputId.name = 'delete_id';
+        inputId.value = id;
+        form.appendChild(inputId);
+        document.body.appendChild(form);
+        form.submit();
         }
     }
 
-    // ===== FUNGSI BUKA MODAL =====
+    // ===== FUNGSI BUKA MODAL (TETAP SAMA, TAPI ID TARGET DISESUAIKAN) =====
     function openModal(url) {
         const overlay = document.getElementById('modalOverlay');
-        const content = document.getElementById('modalContent');
+        const content = document.getElementById('modalBody'); // Perbaikan target ke modalBody
         
         if(overlay && content) {
-            overlay.classList.remove('hidden');
-            
-            // Loading state
-            content.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3 animate-pulse">
-                    <div class="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="font-medium text-gray-600">Memuat data...</span>
-                </div>
-            `;
-            
-            // Fetch data
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network error');
-                    return response.text();
-                })
-                .then(html => {
-                    content.innerHTML = html;
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    content.innerHTML = `
-                        <div class="bg-white p-6 rounded-xl text-red-500 text-center">
-                            <i class="fa-solid fa-exclamation-triangle text-4xl mb-3"></i>
-                            <p class="font-semibold">Gagal memuat data</p>
-                            <p class="text-sm mt-2">${err.message}</p>
-                        </div>
-                    `;
-                });
+        overlay.classList.remove('hidden');
+        // Loading state
+        content.innerHTML = `
+        <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3 animate-pulse">
+            <div class="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <span class="font-medium text-gray-600">Memuat data...</span>
+        </div>`;
+        
+        // Fetch data
+        fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Network error');
+            return response.text();
+        })
+        .then(html => {
+            content.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            content.innerHTML = `<div class="text-red-500 text-center">Gagal memuat data: ${err.message}</div>`;
+        });
         }
     }
 
-    // ===== FUNGSI TUTUP MODAL =====
+    // ===== FUNGSI TUTUP MODAL (TETAP SAMA) =====
     function closeModal() {
         const overlay = document.getElementById('modalOverlay');
         if(overlay) {
-            overlay.classList.add('hidden');
+        overlay.classList.add('hidden');
         }
     }
 
@@ -262,11 +289,11 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
     document.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('modalOverlay');
         if(overlay) {
-            overlay.addEventListener('click', function(e) {
-                if(e.target === this) {
-                    closeModal();
-                }
-            });
+        overlay.addEventListener('click', function(e) {
+            if(e.target === this) {
+            closeModal();
+            }
+        });
         }
     });
     </script>
