@@ -37,7 +37,7 @@ $q_recent = mysqli_query($conn, "
     JOIN data_layanan_rs l ON p.id_layanan = l.id_layanan
     WHERE p.id_rs = '$id_rs'
     ORDER BY p.dibuat_pada DESC 
-    LIMIT 5
+    LIMIT 6
 ");
 
 $page_title = "Dashboard Mitra";
@@ -154,7 +154,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                 <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Pendaftaran Terbaru</h3>
-                        <p class="text-xs text-gray-500 mt-1">5 pasien terakhir yang mendaftar</p>
+                        <p class="text-xs text-gray-500 mt-1">Pasien terakhir yang mendaftar</p>
                     </div>
                     <a href="kelola_kunjungan.php" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors">
                         Lihat Semua
