@@ -103,7 +103,7 @@ if(!isset($_SESSION['redirect_after_login']) && isset($_GET['redirect'])) {
 
     <div class="hidden lg:flex lg:w-7/12 relative bg-finders-blue items-center justify-center overflow-hidden">
         
-        <img src="assets/img/rumahsakit_bg.png" alt="Hospital Hallway" class="absolute inset-0 w-full h-full object-cover animate-fade-in-right">
+        <img src="assets/img/rspp.jpg" alt="Hospital Hallway" class="absolute inset-0 w-full h-full object-cover animate-fade-in-right">
         
         <div class="absolute inset-0 bg-blue-900/85 animate-fade-in-right"></div>
         
